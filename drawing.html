@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Canvas</title>
+    <script src="http://localhost/Desktop/jquery-1.5.1.min.js"></script>
+  </head>
+  <body>
+    <div id="mainBody">
+      
+      <h2>Canvas</h2>
+      <style>
+        #canvasId
+        {border: 1px solid black;
+          background-color: Silver;
+        }
+      </style>
+      
+      <canvas id="canvasId" width="900" height="550"></canvas>
+      
+      <script type="text/javascript">
+        var cW = 900;
+        var cH = 550;
+          var ObjArray = [];
+          var isDrawing = false;
+          var lastPosition = {};
+          var mouse = {};
+		  
+        window.onload = windowReady;
+          var canvas = document.getElementById('canvasId');
+          var context = canvas.getContext("2d");		
+        function windowReady() {
+
+          context.fillStyle = "rgba(0,0,0,0.9)";
+          context.fillRect(0, 0, cW, cH);
+          canvas.addEventListener("mousedown", onMouseDown, false);
+          canvas.addEventListener("mouseup", onMouseUp, false);
+          canvas.addEventListener("mousemove", onMouseMove, false);
+          canvas.addEventListener("mouseout", onMouseOut, false);
+        
+
+        }
+		
+          function onMouseDown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.target.style.cursor = 'crosshair';
+            var rect = canvas.getBoundingClientRect();
+            can_x = event.clientX - rect.left;
+            can_y = event.clientY - rect.top;
+            lastPosition = { x: can_x, y: can_y };
+            isDrawing = true;
+          }
+ 
+          
+          function onMouseOut(event) {
+            isDrawing = false;
+            event.preventDefault();
+            event.stopPropagation();
+            event.target.style.cursor = 'default';
+          }
+          function onMouseUp(event) {
+            isDrawing = false;
+            event.preventDefault();
+            event.stopPropagation();
+            event.target.style.cursor = 'default';
+          }
+          function onMouseMove(event) {
+            var rect = canvas.getBoundingClientRect();
+            mouse.x = event.clientX - rect.left;
+            mouse.y = event.clientY - rect.top;
+            Draw(mouse.x, mouse.y);
+          }
+          function Draw(xx, yy) {
+            context.globalCompositeOperation = "source-over";
+            if (isDrawing) {
+              //context.fillStyle = "rgba(255,0,0,1)";
+              context.beginPath();
+              context.strokeStyle = "rgba(0,0,255,1)";
+              context.lineWidth = 2;
+              context.moveTo(lastPosition.x, lastPosition.y);
+              context.lineTo(xx, yy);
+              context.stroke();
+            }
+            lastPosition = { x: xx, y: yy };
+          }		
+      </script> 
+      
+      
+    </div>  
+  </body>
+</html>
+
+

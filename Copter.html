@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Canvas</title>
+    <script src="http://localhost/Desktop/jquery-1.5.1.min.js"></script>
+  </head>
+  <body>
+    <div id="mainBody">
+      
+      <h2>Canvas</h2>
+      <style>
+        #canvasId
+        {border: 1px solid black;
+          background-color: Silver;
+        }
+      </style>
+      
+      <canvas id="canvasId" width="900" height="550"></canvas>
+      
+      <script type="text/javascript">
+		var cW = 900;
+		var cH = 550;
+		var isAscending = false;
+		var start = false;
+		var crash = false;
+		var cop_x = 250; 
+		var cop_y = cH/2;
+		var cop_rad = 25;
+		var ObstacleArray = [];
+
+		var TopDownObs = [];
+	
+        window.onload = windowReady;
+
+		var canvas = document.getElementById('canvasId');
+		var context = canvas.getContext("2d");	
+		  
+        function windowReady() {
+
+          canvas.addEventListener("mousedown", onMouseDown, false);
+          canvas.addEventListener("mouseup", onMouseUp, false);
+          canvas.addEventListener("mouseout", onMouseOut, false);
+		  
+		  PopulateTopDownArray();
+		  AddObstacle();
+		  AddObstacle();
+		  
+		  setInterval(Draw, 30);
+		  
+        }
+		var yyTemp = 10;
+		var increase = true;
+			
+		function PopulateTopDownArray()
+		{
+
+			for(var i = 0; i < cW/5; i++){
+				var temp = {};
+				temp.xx = cW+i;
+				temp.yyTop = yyTemp;
+				temp.TopColor = "green";
+				temp.DownColor = "blue";
+				if(yyTemp >= 150){increase = false;}
+				else if(yyTemp <= 10){increase = true;}
+				
+				if(increase)
+				{yyTemp += 2;}
+				else
+				{yyTemp -= 2;}
+				temp.yyDown = temp.yyTop + (cH - 150);
+				TopDownObs.push(temp);
+			}
+		}
+		
+		function AddToEnd()
+		{
+			var i = TopDownObs.length;
+			var last = TopDownObs[i-1];
+			this.xx = last.xx + 1;
+			this.yyTop = yyTemp;
+			this.yyDown = this.yyTop + (cH - 150);
+			if(yyTemp >= 150){increase = false;}
+			else if(yyTemp <= 10){increase = true;}
+			
+			if(increase)
+			{
+			yyTemp += 2;}
+			else
+			{yyTemp -= 2;}	
+
+			this.TopColor = "green";
+			this.DownColor = "blue";					
+		}
+
+		function AddObstacle(){
+			var ObsObj = {}; 
+			var RandomY = Math.random() * 100 + 50;
+			if(ObstacleArray.length == 0)
+			{
+				ObsObj = {x:cW -10, y: cH/2 - RandomY};
+				ObstacleArray.push(ObsObj);
+			}
+			else{
+				var temp = ObstacleArray[ObstacleArray.length - 1];
+				ObsObj.x = temp.x + cW/2+200;
+				ObsObj.y = cH/2 - RandomY;	
+				ObstacleArray.push(ObsObj);				
+			}
+		
+		}
+		
+		function onMouseDown(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			event.target.style.cursor = 'default';
+			start = true;
+			isAscending = true;
+			if(crash){cop_y = cH/2;}
+			crash = false;
+			
+		}
+
+
+		function onMouseOut(event) {
+			isAscending = false;
+			event.preventDefault();
+			event.stopPropagation();
+			event.target.style.cursor = 'default';
+		}
+		function onMouseUp(event) {
+			isAscending = false;
+			event.preventDefault();
+			event.stopPropagation();
+			event.target.style.cursor = 'default';
+		}
+
+		function Draw() 
+		{
+			if(crash){return;}
+			var cur_y;
+			context.fillStyle = "rgba(0,0,0,0.9)";
+			context.fillRect(0, 0, cW, cH);		
+			context.fillStyle = "white";			
+			context.globalCompositeOperation = "source-over";
+			context.beginPath();
+			context.arc(cop_x, cop_y, cop_rad, 0, Math.PI * 2, false);
+			
+			
+			if(start){
+				if(isAscending){cop_y -= 7;}
+				else {cop_y += 10;}			
+				
+				for(var j = 0; j<ObstacleArray.length; j++ ){
+					context.fillStyle = "red";	
+					context.fillRect(ObstacleArray[j].x, ObstacleArray[j].y, 40, 175);
+					ObstacleArray[j].x -= 12;
+					
+					if(ObstacleArray[j].x <= 0){
+					ObstacleArray.splice(j,1);
+					AddObstacle();
+					}
+				}
+				
+				for(var k = 0; k < TopDownObs.length; k++){
+					context.fillStyle = TopDownObs[k].TopColor;
+					context.fillRect(k*5 + TopDownObs[k].xx, 0, 5, TopDownObs[k].yyTop);
+					context.fillStyle = TopDownObs[k].DownColor;
+					context.fillRect(k*5 + TopDownObs[k].xx, TopDownObs[k].yyDown, 5, cH-TopDownObs[k].yyDown);
+					
+					//if(TopDownObs[k].xx == )
+					TopDownObs[k].xx -= 2;
+					
+					if (TopDownObs[k].xx <= 0)
+					{ 
+						TopDownObs.splice(k,1);
+						TopDownObs.push(new AddToEnd());
+					}
+					else{
+						if((k*5 + TopDownObs[k].xx) <= cop_x && cop_x <= (k*5 + TopDownObs[k].xx + 10 )){
+						if (cop_y -cop_rad  <= TopDownObs[k].yyTop ||
+							cop_y + cop_rad >= TopDownObs[k].yyDown){
+							crash = true;					
+							}
+						}
+					}
+	
+
+				}					
+				
+			}
+			context.fill();
+
+		}	
+
+		
+		
+      </script> 
+      
+      
+    </div>  
+  </body>
+</html>
+
+
