@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PNKJ</title>
+	</head>
+<body>
+	<div id="game">
+		ABCD
+		<canvas id="canvas" >
+			<div id="nocanvas">
+			</div>
+		</canvas>
+	</div>
+</body>
+<style>
+#canvas{
+	border: 1px solid black;
+}
+</style>
+<script  type="text/javascript">
+	//window.onload = init;
+function Banner(){
+	
+	var keyword = "INDIA";
+	var canvas;
+	var context;
+	var W = 700; var H = 500;
+
+
+	var angle = 0;
+		
+	function Points(x,y){
+		this.x = x;
+		this.y = y;
+		this.height = 100;
+		this.width = 100;
+	}
+
+	var v1 = new Points(100, 100);
+	
+
+	function drawTop(){
+		context.fillStyle = "#8B13C3";
+		context.beginPath();		
+		context.moveTo(v1.x, v1.y);
+		context.lineTo(v1.x + v1.width, v1.y);
+		context.lineTo(W/2, H/2);
+		context.closePath();
+		context.fill();		
+	}
+		
+	function drawLeft(){
+		
+		context.fillStyle = "#0DC425";
+		context.beginPath();		
+		context.moveTo(v1.x, v1.y);
+		context.lineTo(v1.x, v1.y+ v1.height);
+		context.lineTo(W/2, H/2);
+		context.closePath();
+		context.fill();	
+	}		
+	function drawBottom(){
+		
+		context.fillStyle = "#0D10C4";
+		context.beginPath();		
+		context.moveTo(v1.x, v1.y + v1.height);
+		context.lineTo(v1.x + v1.width, v1.y+ v1.height);
+		context.lineTo(W/2, H/2);
+		context.closePath();
+		context.fill();	
+	}
+	function drawRight(){
+		context.fillStyle = "#C4C10D";
+		context.beginPath();		
+		context.moveTo(v1.x + v1.width, v1.y + v1.height);
+		context.lineTo(v1.x + v1.width, v1.y);
+		context.lineTo(W/2, H/2);
+		context.closePath();
+		context.fill();		
+	}
+	
+	var update = function(){
+		var t = new Array();
+		var innerC = new Array();
+		//itercount++;
+		//clear();
+		context.fillStyle = "rgb(0,0,0)";
+		context.fillRect(0,0,W,H);
+		
+		if(v1.x < W/2 && v1.y < H/2){
+			drawTop();
+			drawLeft();
+			
+			drawRight();
+			drawBottom();
+		}
+		else if(v1.x < W/2 && v1.y > H/2){
+			drawBottom();
+			drawLeft();
+			drawRight();
+			drawTop();
+		}
+		else if(v1.x > W/2 && v1.y < H/2){
+			drawTop();
+			drawRight();
+			drawLeft();
+			
+			drawBottom();
+		}		
+		else{
+
+			drawBottom();
+			drawRight();
+			drawTop();
+			drawLeft();			
+		}
+		
+		context.fillStyle = "#C4280D"
+		context.beginPath();
+		context.moveTo(v1.x, v1.y);
+		context.lineTo(v1.x + v1.width, v1.y);
+		context.lineTo(v1.x + v1.width, v1.y + v1.height);
+		context.lineTo(v1.x, v1.y + v1.height);
+		context.closePath();
+		context.fill();				
+		
+	}		
+
+	
+	var mouseIsDown = 0;
+	
+	function mouseDown(e){
+		if(!e)
+			var e = event
+
+		var canX, canY;		
+
+		canX = e.pageX - canvas.offsetLeft;
+		canY = e.pageY - canvas.offsetTop;	
+
+		if(canX >= v1.x && canX <= v1.x + 100 &&
+			canY >= v1.y && canY <= v1.y + 100)
+				mouseIsDown = 1;
+	}
+	
+	function mouseXY(e){
+		if(!e)
+			var e = event
+
+		var canX, canY;		
+
+		if(mouseIsDown == 1)
+		{
+			canX = e.pageX - canvas.offsetLeft;
+			canY = e.pageY - canvas.offsetTop;	
+			//console.log(canX+"  "+canY);
+			v1.x = canX;
+			v1.y = canY;
+		}
+		update();
+	}	
+
+	function mouseUp(mouseEvent){
+		mouseIsDown = 0;
+	}	
+	
+	
+	this.initialize = function(canvas_id){
+		canvas = document.getElementById(canvas_id);
+		context = canvas.getContext('2d');
+		
+		canvas.width = W;//window.innerWidth;
+		canvas.height = H; //window.innerHeight;
+		
+		canvas.addEventListener("mousedown", mouseDown, false);
+		canvas.addEventListener("mousemove", mouseXY, false);		
+		canvas.addEventListener("mouseup", mouseUp, false);
+		canvas.addEventListener("mouseout", mouseUp, false);
+			
+		//start();
+		//setInterval(update, 100);
+		update();
+	}	
+	
+	var clear = function(){
+		canvas.width = canvas.width;
+	}	
+	
+}
+
+var banner = new Banner();
+banner.initialize("canvas");
+</script>
+
+
+</html>

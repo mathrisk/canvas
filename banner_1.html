@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PNKJ</title>
+	
+	
+	
+	</head>
+<body>
+	<div id="game">
+		ABCD
+		<canvas id="canvas" >
+			<div id="nocanvas">
+				To play this game you need a good Browser, like
+
+			</div>
+		</canvas>
+	</div>
+</body>
+<style>
+#canvas{
+	border: 1px solid black;
+}
+</style>
+<script  type="text/javascript">
+
+function Banner(){
+	
+	var keyword = "INDIA";
+	var canvas;
+	var context;
+	
+	var bgCanvas;
+	var bgContext;
+	
+	var denseness = 10;
+	var particles = [];
+
+	//Canvas dimensions
+	var W = 700; var H = 300;
+
+	this.initialize = function(canvas_id){
+		canvas = document.getElementById(canvas_id);
+		context = canvas.getContext('2d');
+		
+		canvas.width = W;//window.innerWidth;
+		canvas.height = H; //window.innerHeight;
+		
+		bgCanvas = document.createElement('canvas');
+		bgContext = bgCanvas.getContext('2d');
+		
+		bgCanvas.width = W; //window.innerWidth;
+		bgCanvas.height = H; //window.innerHeight;
+	
+		//bgCanvas.width = 1300;
+		//bgCanvas.height = 800;
+		
+		//canvas.addEventListener('mousemove', MouseMove, false);
+		//canvas.addEventListener('mouseout', MouseOut, false);
+			
+		start();
+	}	
+
+
+	var start = function(){
+	
+		//var a = '#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16);
+		//alert(a);		
+		bgContext.fillStyle = "#000000";
+		bgContext.font = '300px impact';
+		bgContext.fillText(keyword, 10, 260);
+	
+
+	    //context.fillStyle = "rgb(200,0,0)";
+        //context.fillRect (10, 10, 55, 50);
+	
+		clear();	
+		getCoords();
+	}	
+
+	var getCoords = function(){
+		var imageData, pixel, height, width;
+		
+		imageData = bgContext.getImageData(0, 0, canvas.width, canvas.height);
+		
+		// quickly iterate over all pixels - leaving density gaps
+	    for(height = 0; height < bgCanvas.height; height += denseness){
+            for(width = 0; width < bgCanvas.width; width += denseness){   
+               pixel = imageData.data[((width + (height * bgCanvas.width)) * 4) - 1];
+                  //Pixel is black from being drawn on. 
+                  if(pixel == 255) {
+                    drawCircle(width, height, true);
+                  }
+				  //else
+					drawCircle(width, height, false);
+            }
+        }     
+       setInterval( update, 40 );
+	   //update();
+	   //setTimeout(update, 3000);
+	}
+	
+	var drawCircle = function(x, y, istext){
+		
+		//var startx = (Math.random() * canvas.width);
+		//var starty = (Math.random() * canvas.height);
+		
+		//var velx = (x - startx) / itertot;
+		//var vely = (y - starty) / itertot;	
+		
+		if(istext == true){
+		particles.push(
+			{c: "pink", //'#' + (Math.random() * 0x949494 + 0xaaaaaa | 0).toString(16),
+			 x: x, //goal position
+			 y: y,
+			 text : istext,
+			 //x2: startx, //start position
+			 //y2: starty,
+			 //r: true, //Released (to fly free!)
+			 //v:{x:velx , y: vely}
+			}
+		)
+		}
+		else{
+		particles.push(
+			{c: '#000000',
+			 x: x, //goal position
+			 y: y,
+			 text : istext,
+			}
+		)
+		}
+	}
+	
+	var update = function(){
+		var i, dx, dy, sqrDist, scale;
+		//itercount++;
+		clear();
+		
+		for (i = 0; i < particles.length; i++){
+				
+			
+			if(!particles[i].text){
+			context.fillStyle = "grey";
+			context.beginPath();
+			context.arc(particles[i].x, particles[i].y, 4 ,0 , Math.PI*2, true);
+			//context.fillRect(particles[i].x, particles[i].y, 4, 4);
+			context.closePath();
+	    	//context.fill();	
+			}
+			else
+			{
+				particles[i].x = particles[i].x - 10;
+				if(particles[i].x < 0)
+					particles[i].x = W - 10;
+					
+				//if(!particles[i].text)continue;
+					
+				context.fillStyle = particles[i].c;
+				context.beginPath();
+				context.arc(particles[i].x, particles[i].y, 4 ,0 , Math.PI*2, true);
+				//context.fillRect(particles[i].x, particles[i].y, 4, 4);
+				context.closePath();
+									
+								
+			}			
+			
+			context.fill();	
+		}
+			
+	}		
+
+	var clear = function(){
+		canvas.width = canvas.width;
+	}	
+	
+}
+
+var banner = new Banner();
+banner.initialize("canvas");
+</script>
+
+
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PNKJ</title>
+	
+	
+	
+	</head>
+<body>
+	<div id="game">
+		<input id="image_1" type="file">File</input>
+		<button name="Submit" onClick="OnSubmitClick()">Submit</button>
+		<button name="bnw" onClick="OnBnWClick()">B/W</button>
+		<br>
+		<canvas id="canvas" >ABCD</canvas>
+	</div>
+</body>
+<style>
+#canvas{
+	border: 1px solid black;
+}
+</style>
+<script  type="text/javascript">
+	window.onload = initialize;
+
+	function OnSubmitClick(){
+		img = document.getElementById("image_1").value;
+		
+		image = "file:///C:\\Users\\aravindh\\Desktop\\Pankaj\\Random Images\\"+img;
+		//alert("image "+image)
+		loadImageToCanvas(image);
+	}
+
+
+	var keyword = "INDIA";
+	var canvas;
+	var context;
+	
+	var bgCanvas;
+	var bgContext;
+	
+	var denseness = 10;
+	var particles = [];
+
+	//Canvas dimensions
+	var W = 1000; var H = 500;
+
+	function initialize(){
+		canvas = document.getElementById("canvas");
+		context = canvas.getContext('2d');
+		
+		canvas.width = W;//window.innerWidth;
+		canvas.height = H; //window.innerHeight;
+		
+		bgCanvas = document.createElement('canvas');
+		bgContext = bgCanvas.getContext('2d');
+		
+		bgCanvas.width = W; //window.innerWidth;
+		bgCanvas.height = H; //window.innerHeight;
+	
+		//bgCanvas.width = 1300;
+		//bgCanvas.height = 800;
+		
+		//canvas.addEventListener('mousemove', MouseMove, false);
+		//canvas.addEventListener('mouseout', MouseOut, false);
+			
+		//alert("hi");	
+		 //setInterval( update, 40 );
+		 update();
+	}	
+
+	function loadImageToCanvas(img){
+		console.log(img);
+		var imageObj = new Image();
+		imageObj.src = img;
+		
+		context.drawImage(imageObj, 0, 0, W, H);
+	}	
+	
+	function OnBnWClick(){
+	
+		var pixels = context.getImageData(0, 0, W, H);
+		var colordata = pixels.data;
+	
+	
+		//every pixel gives 4 integers -> r, g, b, a
+		//so length of colordata array is W*H*4
+		var ascii = document.getElementById("ascii");
+		for(var i = 0; i < colordata.length; i = i+4)
+		{
+			r = colordata[i];
+			g = colordata[i+1];
+			b = colordata[i+2];
+			//converting the pixel into grayscale
+			gray = r*0.2126 + g*0.7152 + b*0.0722;
+			//overwriting the colordata array with grayscale values
+			colordata[i] = colordata[i+1] = colordata[i+2] = gray;
+		}	
+		
+	
+		var imageData, pixel, height, width;
+		
+		imageData = context.getImageData(0, 0, canvas.width, canvas.height);	
+	/*
+		for(height = 0; height < bgCanvas.height; height += 1){
+            for(width = 0; width < bgCanvas.width; width += 1){
+		
+			}
+		}			
+	*/	
+	
+	}
+	
+	var getCoords = function(){
+		var imageData, pixel, height, width;
+		
+		imageData = bgContext.getImageData(0, 0, canvas.width, canvas.height);
+		
+		// quickly iterate over all pixels - leaving density gaps
+	    for(height = 0; height < bgCanvas.height; height += denseness){
+            for(width = 0; width < bgCanvas.width; width += denseness){   
+               pixel = imageData.data[((width + (height * bgCanvas.width)) * 4) - 1];
+                  //Pixel is black from being drawn on. 
+                  if(pixel == 255) {
+                    //drawCircle(width, height, true);
+                  }
+
+            }
+        }     
+
+	}
+	
+	
+	
+	var update = function(){
+		var i, dx, dy, sqrDist, scale;
+		
+		context.fillStyle = "rgb(0,0,0)";
+		context.fillRect(0,0,W,H);
+			
+	}	
+
+</script>
+
+
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PNKJ</title>
+	
+	
+	
+	</head>
+<body>
+	<div id="game">
+		ABCD
+		<canvas id="canvas" >
+			<div id="nocanvas">
+				To play this game you need a good Browser, like
+
+			</div>
+		</canvas>
+	</div>
+</body>
+<style>
+#canvas{
+	border: 1px solid black;
+}
+</style>
+<script  type="text/javascript">
+	//window.onload = init;
+function Banner(){
+	
+	var keyword = "INDIA";
+	var canvas;
+	var context;
+	var W = 700; var H = 400;
+
+	function Points(x,y,z){
+		this.x=x;
+		this.y=y;
+		this.z=z;
+
+		this.rotateX = function(angle){
+			var rad, sinVal, cosVal, y, z;
+			rad = angle * Math.PI/180;
+			cosVal = Math.cos(rad);
+			sinVal = Math.sin(rad);
+			
+			y = this.y * cosVal - this.z * sinVal;
+			z = this.y * sinVal + this.z * cosVal;
+			return new Points(this.x, y, z);
+		}
+		
+		
+		this.rotateY = function(angle){
+			var rad, sinVal, cosVal, y, z;
+			rad = angle * Math.PI/180;
+			cosVal = Math.cos(rad);
+			sinVal = Math.sin(rad);
+			
+			z = this.z * cosVal - this.x * sinVal;
+			x = this.z * sinVal + this.x * cosVal;
+			
+			return new Points(x, this.y, z);
+		}
+
+		this.rotateZ = function(angle){
+			var rad, sinVal, cosVal, y, z;
+			rad = angle * Math.PI/180;
+			cosVal = Math.cos(rad);
+			sinVal = Math.sin(rad);
+			
+			x = this.x * cosVal - this.y * sinVal;
+			y = this.x * sinVal + this.y * cosVal;
+			return new Points(x, y, this.z);
+		}
+		
+		this.project = function(viewWidth, viewHeight, fov, viewDistance){
+			var factor, x,y;
+			factor = fov/(viewDistance + this.z);
+			x = this.x*factor + viewWidth/2;
+			y = this.y*factor + viewHeight/2;
+			return new Points(x,y,this.z);
+		}
+	}	
+	var phi;
+	var vertices = new Array();
+	for(var i = 0; i<360; i += 10){
+		rad = i *Math.PI/180;
+		for(var j = 0; j<360; j += 10){
+			phi = j *Math.PI/180;
+			var v = new Points(Math.sin(phi)*Math.cos(rad),
+								Math.sin(phi)*Math.sin(rad),
+								Math.cos(phi));
+			vertices.push(v);
+		}
+	}
+
+	var angle = 0;
+				
+	var update = function(){
+		var t = new Array();
+		var innerC = new Array();
+		//itercount++;
+		//clear();
+		context.fillStyle = "rgb(0,0,0)";
+		context.fillRect(0,0,W,H);
+		
+
+		for(var i=0; i<vertices.length; i++){
+			var v = vertices[i];
+			var r = v.rotateX(angle).rotateY(angle).rotateZ(angle);
+			var p = r.project(W, H, 1500, 10);
+			t.push(p);		
+		}
+
+		
+		for(var i =0; i<t.length; i += 2){
+			context.fillStyle = "rgb(255,55,255)"
+			context.beginPath()
+			/*context.moveTo(t[i].x, t[i].y);
+			context.lineTo(t[i+1].x, t[i+1].y);
+			if(i+2 >= t.length){
+				
+				context.lineTo(t[1].x, t[1].y);
+				context.lineTo(t[0].x, t[0].y);
+			}
+			else{
+			context.lineTo(t[i+3].x, t[i+3].y);
+			context.lineTo(t[i+2].x, t[i+2].y);
+			}
+			*/
+			radii = 2 + 2*t[i].z; //Math.cos(angle *Math.PI/180);
+			if(radii < 0) radii *= -1;
+			//console.log("X "+t[i].x+" Y "+ t[i].y+" Rdius "+radii+" angle "+angle+" z-axis "+t[i].z);
+			context.arc(t[i].x, t[i].y, radii ,0 , Math.PI*2, true);
+			context.closePath()
+			context.fill();
+			
+			
+			context.strokeStyle = "rgb(55,255,55)"
+			context.beginPath()
+			context.moveTo(t[i].x, t[i].y)
+			context.lineTo(t[i+1].x, t[i+1].y);
+			//context.closePath()
+			context.lineWidth = .3 * radii
+			context.stroke();
+			
+		}
+		
+		angle += 2;		
+		//if(angle > 360) angle = 0;
+	}		
+
+	this.initialize = function(canvas_id){
+		canvas = document.getElementById(canvas_id);
+		context = canvas.getContext('2d');
+		
+		canvas.width = W;//window.innerWidth;
+		canvas.height = H; //window.innerHeight;
+				
+		//start();
+		setInterval(update, 100);
+		//update();
+	}	
+	
+	var clear = function(){
+		canvas.width = canvas.width;
+	}	
+	
+}
+
+var banner = new Banner();
+banner.initialize("canvas");
+</script>
+
+
+</html>
